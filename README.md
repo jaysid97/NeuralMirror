@@ -9,6 +9,7 @@ A real-time AI wellness companion that analyzes your heart rate and stress signa
 - **Live Voice Output**: Converts AI responses to natural speech using Murf Falcon
 - **Multiple Response Styles**: Switch between oracle, tactical, and poetic voices
 - **FutureCast Mode**: Tracks trends and provides forward-looking wellness forecasts
+- **Session Intelligence Report**: Optionally exports a JSON report with stress trends, peaks, and AI events
 - **Interactive Controls**: Chat, reset history, adjust settings in real-time
 
 ## Quick Start
@@ -65,6 +66,7 @@ python mirror.py
 - `--no-voice`: Disable Murf TTS output (text-only mode)
 - `--interval 30`: Set seconds between automatic AI insights (default: 30)
 - `--futurecast`: Start in FutureCast mode
+- `--save-report reports/session.json`: Export session summary + event timeline at exit
 
 #### Live Controls (while webcam window is open)
 | Key | Action |

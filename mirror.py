@@ -17,8 +17,11 @@ Controls (while the webcam window is open):
 from __future__ import annotations
 
 import argparse
+import json
 import time
 from collections import deque
+from datetime import datetime, timezone
+from pathlib import Path
 
 import cv2
 
@@ -42,6 +45,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Start in FutureCast mode (forward-looking trend insights)",
     )
+    p.add_argument(
+        "--save-report",
+        type=str,
+        default="",
+        help="Optional path to save a JSON session report at exit",
+    )
     return p.parse_args()
 
 
@@ -60,6 +69,41 @@ def _cycle_style(current: str) -> str:
     except ValueError:
         return styles[0]
     return styles[(idx + 1) % len(styles)]
+
+
+def _save_session_report(report_path: str, session_started: float, events: list[dict]) -> None:
+    if not events:
+        return
+
+    readings = [e for e in events if e.get("type") == "insight"]
+    bpms = [float(e["bpm"]) for e in readings if "bpm" in e]
+    stresses = [float(e["stress_index"]) for e in readings if "stress_index" in e]
+
+    summary = {
+        "session_started_utc": datetime.fromtimestamp(session_started, tz=timezone.utc).isoformat(),
+        "session_ended_utc": datetime.now(tz=timezone.utc).isoformat(),
+        "total_events": len(events),
+        "insight_events": len(readings),
+        "chat_events": len([e for e in events if e.get("type") == "chat"]),
+        "avg_bpm": round(sum(bpms) / len(bpms), 2) if bpms else None,
+        "max_bpm": round(max(bpms), 2) if bpms else None,
+        "avg_stress_index": round(sum(stresses) / len(stresses), 3) if stresses else None,
+        "max_stress_index": round(max(stresses), 3) if stresses else None,
+        "futurecast_usage_count": len([e for e in readings if e.get("mode") == "FutureCast"]),
+    }
+
+    report = {
+        "project": "NeuralMirror",
+        "report_version": 1,
+        "summary": summary,
+        "events": events,
+    }
+
+    out = Path(report_path)
+    if out.parent and str(out.parent) != ".":
+        out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    print(f"[NeuralMirror] Session report saved: {out}")
 
 
 def main() -> None:
@@ -85,6 +129,8 @@ def main() -> None:
 
     last_auto_insight = time.time()
     recent_readings: deque = deque(maxlen=24)
+    session_started = time.time()
+    session_events: list[dict] = []
 
     try:
         while True:
@@ -135,6 +181,18 @@ def main() -> None:
                     recent_readings=list(recent_readings),
                 )
                 print(f"\n🧠 NeuralMirror chat:\n   {reply}\n")
+                session_events.append(
+                    {
+                        "type": "chat",
+                        "timestamp": time.time(),
+                        "user_message": user_msg,
+                        "assistant_reply": reply,
+                        "mode": "FutureCast" if futurecast_enabled else "Classic",
+                        "style": brain.style,
+                        "bpm": round(reading.bpm, 2),
+                        "stress_index": round(reading.stress_index, 3),
+                    }
+                )
                 if voice:
                     voice.speak(reply)
 
@@ -184,6 +242,21 @@ def main() -> None:
                     insight = brain.analyse(reading)
                 print(f"\n🧠 NeuralMirror says:\n   {insight}\n")
 
+                session_events.append(
+                    {
+                        "type": "insight",
+                        "timestamp": now,
+                        "mode": "FutureCast" if futurecast_enabled else "Classic",
+                        "style": brain.style,
+                        "bpm": round(reading.bpm, 2),
+                        "sdnn": round(reading.sdnn, 2),
+                        "rmssd": round(reading.rmssd, 2),
+                        "stress_index": round(reading.stress_index, 3),
+                        "confidence": round(reading.confidence, 3),
+                        "insight": insight,
+                    }
+                )
+
                 if voice:
                     voice.speak(insight)
 
@@ -194,6 +267,8 @@ def main() -> None:
         if voice:
             voice.close()
         cv2.destroyAllWindows()
+        if args.save_report:
+            _save_session_report(args.save_report, session_started, session_events)
         print("\n[NeuralMirror] Session ended. Stay well. 💚")
 
 
