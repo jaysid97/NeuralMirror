@@ -1,12 +1,12 @@
 # NeuralMirror
 
-A real-time AI wellness companion that analyzes your heart rate and stress signals via webcam to provide personalized, empathic insights powered by GPT-4o and text-to-speech synthesis.
+A real-time AI wellness companion that analyzes your heart rate and stress signals via webcam to provide personalized, empathic insights powered by GPT-4o and Murf Falcon voice synthesis.
 
 ## Features
 
 - **Remote Photoplethysmography (rPPG)**: Detects heart rate from facial video without hardware sensors
 - **AI-Powered Insights**: Sends biometric data to GPT-4o for contextual wellness advice with rolling conversation history
-- **Live Voice Output**: Converts AI responses to natural speech using Murf TTS
+- **Live Voice Output**: Converts AI responses to natural speech using Murf Falcon
 - **Multiple Response Styles**: Switch between oracle, tactical, and poetic voices
 - **FutureCast Mode**: Tracks trends and provides forward-looking wellness forecasts
 - **Interactive Controls**: Chat, reset history, adjust settings in real-time
@@ -48,6 +48,9 @@ Then edit `.env` and add your credentials:
 ```
 MURF_API_KEY=your_murf_api_key_here
 MURF_VOICE_ID=en-US-natalie
+MURF_MODEL=FALCON
+MURF_REGION=GLOBAL
+MURF_LOCALE=en-US
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
@@ -99,7 +102,7 @@ python test_system.py
 1. **Pulse Detection**: The webcam captures your face and detects subtle color changes in blood flow to calculate real-time heart rate
 2. **Stress Analysis**: Your current BPM is compared against baseline thresholds to estimate stress levels
 3. **AI Analysis**: Heart rate + stress data is sent to GPT-4o with conversation history for contextual insights
-4. **Voice Synthesis**: The AI response is converted to speech via Murf and played back in real-time
+4. **Voice Synthesis**: The AI response is converted to speech via Murf Falcon and played back in real-time
 
 ## Configuration
 

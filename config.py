@@ -12,6 +12,9 @@ load_dotenv()  # reads .env in project root
 # ─── Murf TTS ────────────────────────────────────────────────────────────────
 MURF_API_KEY: str = os.getenv("MURF_API_KEY", "")
 MURF_VOICE_ID: str = os.getenv("MURF_VOICE_ID", "en-US-natalie")   # calm, empathic voice
+MURF_MODEL: str = os.getenv("MURF_MODEL", "FALCON")
+MURF_REGION: str = os.getenv("MURF_REGION", "GLOBAL")
+MURF_LOCALE: str = os.getenv("MURF_LOCALE", "en-US")
 
 # ─── OpenAI / LLM Brain ──────────────────────────────────────────────────────
 OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "YOUR_OPENAI_API_KEY")
