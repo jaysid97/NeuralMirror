@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Context Syphon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-1: #07161f;
+      --bg-2: #102b3a;
+      --accent-1: #53f4c8;
+      --accent-2: #ffb347;
+      --ink: #e9f5fb;
+      --muted: #98b2be;
+      --panel: rgba(5, 18, 25, 0.84);
+      --line: rgba(130, 198, 220, 0.25);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      width: 360px;
+      margin: 0;
+      color: var(--ink);
+      font-family: "Space Grotesk", sans-serif;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(83, 244, 200, 0.18), transparent 38%),
+        radial-gradient(circle at 88% 2%, rgba(255, 179, 71, 0.2), transparent 30%),
+        linear-gradient(155deg, var(--bg-1), var(--bg-2));
+      overflow: hidden;
+    }
+
+    .shell {
+      position: relative;
+      padding: 16px;
+    }
+
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, rgba(83, 244, 200, 0.09), transparent 35%);
+      pointer-events: none;
+      animation: pulseScan 3.6s ease-in-out infinite;
+    }
+
+    .panel {
+      position: relative;
+      z-index: 1;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--panel);
+      backdrop-filter: blur(8px);
+      padding: 14px;
+      box-shadow: 0 16px 24px rgba(0, 0, 0, 0.32);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Orbitron", sans-serif;
+      font-size: 17px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chips {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 11px;
+      padding: 6px 8px;
+      text-align: center;
+      color: #d8edf5;
+      background: rgba(34, 76, 92, 0.24);
+    }
+
+    .row {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+    }
+
+    select,
+    button {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-family: inherit;
+    }
+
+    select {
+      padding: 8px;
+      font-size: 12px;
+      color: var(--ink);
+      background: rgba(17, 47, 60, 0.75);
+      border-color: var(--line);
+      outline: none;
+    }
+
+    button {
+      padding: 10px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: transform 0.15s ease, filter 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    #syphonBtn {
+      margin-top: 10px;
+      background: linear-gradient(120deg, #0f9a76, #53f4c8);
+      color: #03231b;
+    }
+
+    #copyBtn {
+      background: linear-gradient(120deg, #96651b, #ffb347);
+      color: #251500;
+    }
+
+    #preview {
+      margin-top: 10px;
+      width: 100%;
+      height: 110px;
+      resize: none;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(7, 23, 33, 0.9);
+      color: #d8edf5;
+      padding: 8px;
+      font-size: 11px;
+      line-height: 1.35;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    #status {
+      margin-top: 8px;
+      min-height: 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @keyframes pulseScan {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="panel">
+      <h1>Context Syphon</h1>
+      <div class="sub">AI-ready tab intelligence stream</div>
+
+      <div class="chips">
+        <div class="chip">Mission: Active</div>
+        <div class="chip">Signal: Stable</div>
+      </div>
+
+      <div class="row">
+        <select id="modeSelect">
+          <option value="brief">Brief</option>
+          <option value="strategic">Strategic</option>
+          <option value="creative">Creative</option>
+        </select>
+      </div>
+
+      <button id="syphonBtn">Syphon Active Tab</button>
+
+      <div class="row">
+        <button id="copyBtn">Copy Preview</button>
+      </div>
+
+      <textarea id="preview" readonly>Waiting for your first capture...</textarea>
+      <div id="status">Awaiting command...</div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

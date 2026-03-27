@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Agentic Context Syphon",
+  "version": "1.0.0",
+  "description": "Instantly structures active tab data into a machine-readable AI prompt.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab",
+    "clipboardWrite"
+  ]
+}
