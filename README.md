@@ -23,7 +23,7 @@ A real-time AI wellness companion that analyzes your heart rate and stress signa
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/NeuralMirror.git
+git clone https://github.com/jaysid97/NeuralMirror.git
 cd NeuralMirror
 ```
 
