@@ -53,7 +53,19 @@ MURF_MODEL=FALCON
 MURF_REGION=GLOBAL
 MURF_LOCALE=en-US
 OPENAI_API_KEY=your_openai_api_key_here
+# Optional: OpenAI-compatible endpoint (e.g., OpenRouter)
+# OPENAI_BASE_URL=https://openrouter.ai/api/v1
+# Optional: model name supported by your provider
+# LLM_MODEL=openai/gpt-4o-mini
+#
+# Optional low/no-cost provider model example:
+# LLM_MODEL=meta-llama/llama-3.1-8b-instruct:free
 ```
+
+If your OpenAI account has quota issues, you can use any OpenAI-compatible API provider by setting:
+- `OPENAI_API_KEY` to that provider key
+- `OPENAI_BASE_URL` to that provider endpoint
+- `LLM_MODEL` to a model available in that provider
 
 ### Usage
 

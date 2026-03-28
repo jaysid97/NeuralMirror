@@ -12,6 +12,7 @@ Algorithm:
 
 import time
 import threading
+import platform
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Optional
@@ -57,11 +58,26 @@ class PulseDetector:
         cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
     )
 
+    @staticmethod
+    def _has_valid_frames(cap: cv2.VideoCapture) -> bool:
+        """Check if camera backend returns non-black frames."""
+        good = 0
+        for _ in range(8):
+            ok, frame = cap.read()
+            if not ok or frame is None:
+                continue
+            # Some backends open but deliver all-black frames on Windows.
+            if float(frame.mean()) > 3.0:
+                good += 1
+        return good >= 2
+
     def __init__(self) -> None:
         self._buffer: deque[float] = deque(
             maxlen=FRAME_BUFFER_SECONDS * TARGET_FPS
         )
         self._latest: Optional[PulseReading] = None
+        self._started_at: float = 0.0
+        self._face_seen_recently: bool = False
         self._lock = threading.Lock()
         self._running = False
         self._thread: Optional[threading.Thread] = None
@@ -69,10 +85,46 @@ class PulseDetector:
 
     # ── Public API ────────────────────────────────────────────────────────────
 
+    @staticmethod
+    def _open_camera() -> Optional[cv2.VideoCapture]:
+        """Open camera with index/backend fallback to avoid black or invalid feeds."""
+        # Try configured index first, then a small set of common alternatives.
+        candidate_indices = [CAMERA_INDEX, 0, 1, 2]
+        seen: set[int] = set()
+
+        for idx in candidate_indices:
+            if idx in seen:
+                continue
+            seen.add(idx)
+
+            if platform.system().lower() == "windows":
+                cap = cv2.VideoCapture(idx, cv2.CAP_DSHOW)
+                if cap and cap.isOpened() and PulseDetector._has_valid_frames(cap):
+                    print(f"[PulseDetector] Using camera index {idx} (DirectShow).")
+                    return cap
+                if cap:
+                    cap.release()
+
+            # Fallback to default backend (often MSMF on Windows).
+            cap = cv2.VideoCapture(idx)
+            if cap and cap.isOpened() and PulseDetector._has_valid_frames(cap):
+                print(f"[PulseDetector] Using camera index {idx} (default backend).")
+                return cap
+            if cap:
+                cap.release()
+
+        return None
+
     def start(self) -> None:
         """Start background webcam capture thread."""
         self._running = True
-        self._cap = cv2.VideoCapture(CAMERA_INDEX)
+        self._started_at = time.time()
+        self._cap = self._open_camera()
+        if not self._cap:
+            self._running = False
+            raise RuntimeError(
+                "Unable to open webcam. Close other apps using the camera and retry."
+            )
         self._cap.set(cv2.CAP_PROP_FPS, TARGET_FPS)
         self._thread = threading.Thread(target=self._capture_loop, daemon=True)
         self._thread.start()
@@ -118,7 +170,9 @@ class PulseDetector:
             if signal is not None:
                 self._buffer.append(signal)
 
-            if len(self._buffer) >= FRAME_BUFFER_SECONDS * TARGET_FPS * 0.5:
+            # Start analysis sooner so users see BPM faster during startup.
+            min_samples = max(int(TARGET_FPS * 8), int(TARGET_FPS * 4))
+            if len(self._buffer) >= min_samples:
                 reading = self._analyse()
                 if reading:
                     with self._lock:
@@ -131,7 +185,9 @@ class PulseDetector:
             gray, scaleFactor=1.1, minNeighbors=5, minSize=(120, 120)
         )
         if len(faces) == 0:
+            self._face_seen_recently = False
             return None
+        self._face_seen_recently = True
         x, y, w, h = faces[0]
         # Forehead ROI: top 25 % of face, centred horizontally
         roi_y1 = y + int(h * 0.05)
@@ -155,9 +211,19 @@ class PulseDetector:
                 order=3,
             )
             _, measures = hp.process(filtered, sample_rate=HP_SAMPLE_RATE)
-            bpm = measures["bpm"]
-            sdnn = measures.get("sdnn", 0.0)
-            rmssd = measures.get("rmssd", 0.0)
+            bpm = float(measures["bpm"])
+            sdnn = float(measures.get("sdnn", 0.0) or 0.0)
+            rmssd = float(measures.get("rmssd", 0.0) or 0.0)
+
+            # HeartPy can occasionally emit NaN/inf during unstable calibration windows.
+            # Ignore those frames and keep the UI in "calibrating" state.
+            if not (np.isfinite(bpm) and np.isfinite(sdnn) and np.isfinite(rmssd)):
+                return None
+
+            # Clamp occasional negative HRV artifacts to zero.
+            sdnn = max(sdnn, 0.0)
+            rmssd = max(rmssd, 0.0)
+
             # Confidence: penalise if BPM outside physiological range
             confidence = 1.0 if 40 <= bpm <= 200 else 0.4
             return PulseReading(bpm=bpm, sdnn=sdnn, rmssd=rmssd, confidence=confidence)
@@ -167,10 +233,26 @@ class PulseDetector:
     def _annotate(self, frame: np.ndarray) -> np.ndarray:
         """Draw BPM overlay on the live frame."""
         reading = self.get_latest()
-        if reading:
+        if reading and np.isfinite(reading.bpm) and np.isfinite(reading.stress_index):
             label = f"BPM: {reading.bpm:.0f}  Stress: {reading.stress_index:.2f}"
             cv2.putText(
                 frame, label, (20, 40),
                 cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 128), 2, cv2.LINE_AA,
+            )
+        else:
+            elapsed = int(max(time.time() - self._started_at, 0))
+            if self._face_seen_recently:
+                label = f"Calibrating... hold still ({elapsed}s)"
+            else:
+                label = "No face detected - center your face in good light"
+            cv2.putText(
+                frame,
+                label,
+                (20, 40),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (0, 220, 255),
+                2,
+                cv2.LINE_AA,
             )
         return frame

@@ -18,7 +18,8 @@ MURF_LOCALE: str = os.getenv("MURF_LOCALE", "en-US")
 
 # ─── OpenAI / LLM Brain ──────────────────────────────────────────────────────
 OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "YOUR_OPENAI_API_KEY")
-LLM_MODEL: str = "gpt-4o"
+OPENAI_BASE_URL: str = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-4o")
 LLM_RESPONSE_STYLE: str = os.getenv("LLM_RESPONSE_STYLE", "oracle")
 LLM_SYSTEM_PROMPT: str = (
     "You are NeuralMirror — an empathic AI wellness companion. "
