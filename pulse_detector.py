@@ -171,7 +171,8 @@ class PulseDetector:
                 self._buffer.append(signal)
 
             # Start analysis sooner so users see BPM faster during startup.
-            min_samples = max(int(TARGET_FPS * 8), int(TARGET_FPS * 4))
+            # Analyse after ~3 seconds of valid signal for faster initial feedback.
+            min_samples = min(int(TARGET_FPS * 3), int(FRAME_BUFFER_SECONDS * TARGET_FPS))
             if len(self._buffer) >= min_samples:
                 reading = self._analyse()
                 if reading:
@@ -181,8 +182,9 @@ class PulseDetector:
     def _extract_signal(self, frame: np.ndarray) -> Optional[float]:
         """Detect face, return mean green-channel value of forehead ROI."""
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # More sensitive face detection (lower minNeighbors, smaller minSize)
         faces = self._FACE_CASCADE.detectMultiScale(
-            gray, scaleFactor=1.1, minNeighbors=5, minSize=(120, 120)
+            gray, scaleFactor=1.05, minNeighbors=4, minSize=(80, 80)
         )
         if len(faces) == 0:
             self._face_seen_recently = False
