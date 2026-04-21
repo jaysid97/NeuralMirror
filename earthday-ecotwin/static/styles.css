@@ -1,0 +1,234 @@
+:root {
+  --bg: #f3f7ee;
+  --ink: #10221a;
+  --surface: rgba(255, 255, 255, 0.78);
+  --primary: #197a46;
+  --primary-strong: #0f5d34;
+  --accent: #e2f25d;
+  --muted: #4e6257;
+  --danger: #a0462a;
+  --radius: 20px;
+  --shadow: 0 14px 40px rgba(15, 50, 30, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at 10% 0%, #d9efbf 0%, transparent 36%),
+              radial-gradient(circle at 95% 12%, #b6e3f7 0%, transparent 30%),
+              var(--bg);
+  min-height: 100vh;
+}
+
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(16, 34, 26, 0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(16, 34, 26, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 24px 16px 52px;
+  position: relative;
+}
+
+.hero {
+  margin: 18px 0 24px;
+  animation: rise 700ms ease;
+}
+
+.kicker {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(226, 242, 93, 0.48);
+  font-weight: 700;
+  font-size: 0.84rem;
+}
+
+h1 {
+  margin: 0;
+  font-family: "Sora", sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1;
+}
+
+.subtitle {
+  max-width: 720px;
+  font-size: 1.05rem;
+  color: var(--muted);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(16, 34, 26, 0.08);
+  backdrop-filter: blur(4px);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+h2 {
+  margin-top: 0;
+  font-family: "Sora", sans-serif;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.94rem;
+}
+
+input[type="text"],
+input[type="number"] {
+  border: 1px solid rgba(16, 34, 26, 0.24);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.checkbox-row {
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  background: rgba(25, 122, 70, 0.09);
+  border-radius: 10px;
+  padding: 11px;
+}
+
+button {
+  margin-top: 14px;
+  background: linear-gradient(120deg, var(--primary) 0%, var(--primary-strong) 100%);
+  color: white;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.03);
+}
+
+.hidden {
+  display: none;
+}
+
+.results {
+  animation: rise 620ms ease;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.metric {
+  border-radius: 14px;
+  border: 1px solid rgba(16, 34, 26, 0.1);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.metric-label {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.metric-value {
+  margin: 0;
+  font-family: "Sora", sans-serif;
+  font-size: 1.35rem;
+}
+
+.metric-value.green {
+  color: var(--primary-strong);
+}
+
+.bar-panel {
+  margin-top: 14px;
+}
+
+.bar-wrap {
+  margin: 10px 0;
+}
+
+.bar {
+  width: 100%;
+  height: 14px;
+  background: rgba(16, 34, 26, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+#bar-before,
+#bar-after {
+  height: 100%;
+  transition: width 500ms ease;
+}
+
+#bar-before {
+  width: 0;
+  background: var(--danger);
+}
+
+#bar-after {
+  width: 0;
+  background: var(--primary);
+}
+
+#actions-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+#actions-list li {
+  background: rgba(226, 242, 93, 0.24);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 780px) {
+  .field-grid,
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+}

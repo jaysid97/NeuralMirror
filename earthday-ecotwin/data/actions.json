@@ -1,0 +1,51 @@
+[
+  {
+    "title": "Swap 3 car commutes for bike or transit",
+    "annual_kg_saved": 420,
+    "effort": "medium",
+    "trigger": "commute",
+    "why_it_works": "Reduces frequent transport emissions immediately."
+  },
+  {
+    "title": "Shift 4 weekly meals to plant-forward",
+    "annual_kg_saved": 360,
+    "effort": "medium",
+    "trigger": "food",
+    "why_it_works": "Dietary changes can produce meaningful annual reductions."
+  },
+  {
+    "title": "Cut home electricity by 15%",
+    "annual_kg_saved": 300,
+    "effort": "medium",
+    "trigger": "home",
+    "why_it_works": "Lighting, appliance, and thermostat improvements compound over time."
+  },
+  {
+    "title": "Replace one short flight with rail or virtual",
+    "annual_kg_saved": 250,
+    "effort": "high",
+    "trigger": "travel",
+    "why_it_works": "Aviation has high per-trip emissions."
+  },
+  {
+    "title": "Adopt default low-waste shopping list",
+    "annual_kg_saved": 180,
+    "effort": "low",
+    "trigger": "all",
+    "why_it_works": "Avoids packaging and unnecessary consumer emissions."
+  },
+  {
+    "title": "Join local repair or reuse groups",
+    "annual_kg_saved": 140,
+    "effort": "low",
+    "trigger": "all",
+    "why_it_works": "Extends product lifespans and avoids replacement emissions."
+  },
+  {
+    "title": "Switch to green power or community solar",
+    "annual_kg_saved": 520,
+    "effort": "medium",
+    "trigger": "home",
+    "why_it_works": "Cleaner electricity significantly cuts household footprint."
+  }
+]

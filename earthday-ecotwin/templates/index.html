@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoTwin - Earth Day Copilot Project</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <main class="container">
+    <header class="hero">
+      <p class="kicker">Earth Day Build Challenge</p>
+      <h1>EcoTwin</h1>
+      <p class="subtitle">An AI climate coach that turns personal habits into a high-impact weekly action plan.</p>
+    </header>
+
+    <section class="card form-card">
+      <h2>Build Your Impact Profile</h2>
+      <form id="profile-form">
+        <div class="field-grid">
+          <label>
+            City
+            <input type="text" id="city" placeholder="Nashville" required>
+          </label>
+          <label>
+            Commute km / week
+            <input type="number" id="commute_km_week" min="0" value="60" required>
+          </label>
+          <label>
+            Meat meals / week
+            <input type="number" id="meat_meals_week" min="0" value="7" required>
+          </label>
+          <label>
+            Home kWh / month
+            <input type="number" id="home_kwh_month" min="0" value="320" required>
+          </label>
+          <label>
+            Flights / year
+            <input type="number" id="flights_year" min="0" value="2" required>
+          </label>
+          <label class="checkbox-row">
+            <input type="checkbox" id="recycling" checked>
+            Recycling habit in place
+          </label>
+        </div>
+        <button type="submit">Generate My Climate Plan</button>
+      </form>
+    </section>
+
+    <section id="results" class="results hidden">
+      <article class="card">
+        <h2>Your Annual Impact Snapshot</h2>
+        <div class="metrics">
+          <div class="metric">
+            <p class="metric-label">Current Footprint</p>
+            <p class="metric-value" id="baseline">-</p>
+          </div>
+          <div class="metric">
+            <p class="metric-label">Reduction Potential</p>
+            <p class="metric-value green" id="saved">-</p>
+          </div>
+          <div class="metric">
+            <p class="metric-label">Projected Footprint</p>
+            <p class="metric-value" id="after">-</p>
+          </div>
+        </div>
+        <div class="bar-panel">
+          <div class="bar-wrap">
+            <span>Before</span>
+            <div class="bar"><div id="bar-before"></div></div>
+          </div>
+          <div class="bar-wrap">
+            <span>After</span>
+            <div class="bar"><div id="bar-after"></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>AI Coach Summary</h2>
+        <p id="coach-text"></p>
+      </article>
+
+      <article class="card">
+        <h2>Top Actions For This Year</h2>
+        <ul id="actions-list"></ul>
+      </article>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
